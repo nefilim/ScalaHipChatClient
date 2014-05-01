@@ -1,12 +1,12 @@
 package org.nefilim.hipchatclient
 
-import org.json4s.{CustomSerializer, NoTypeHints, DefaultFormats}
+import org.json4s.{CustomSerializer, NoTypeHints}
 import spray.http.HttpEntity
 import spray.httpx.marshalling.Marshaller
 import org.json4s.jackson.Serialization._
 import spray.http.ContentTypes._
 import org.json4s.jackson.Serialization
-import org.json4s.JsonAST.{JString, JObject}
+import org.json4s.JsonAST.JString
 
 /**
  * Created by peter on 4/30/14.
