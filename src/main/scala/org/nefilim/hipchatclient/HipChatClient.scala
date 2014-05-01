@@ -29,7 +29,7 @@ object HipChatClient {
 import HipChatClient._
 
 trait HipChatClient {
-  def sendRoomNotification(room: String, message: String): Future[Either[HipChatClientFailedResult, MessageStatus]]
+  def sendRoomNotification(room: String, message: String, notify: Boolean = true): Future[Either[HipChatClientFailedResult, MessageStatus]]
 }
 
 class ConfiguredHipChatClient(apiToken: String, host: String) extends HipChatClient with Logging {
@@ -51,8 +51,8 @@ class ConfiguredHipChatClient(apiToken: String, host: String) extends HipChatCli
       ~> sendReceive
     )
 
-  def sendRoomNotification(room: String, message: String): Future[Either[HipChatClientFailedResult, MessageStatus]] = {
-    val futureResponse = fireRequest[NotificationRequest](s"/room/$room/notification", body = Some(NotificationRequest(message = message)), method = HttpMethods.POST)
+  def sendRoomNotification(room: String, message: String, notify: Boolean = true): Future[Either[HipChatClientFailedResult, MessageStatus]] = {
+    val futureResponse = fireRequest[NotificationRequest](s"/room/$room/notification", body = Some(NotificationRequest(message, notification = notify)), method = HttpMethods.POST)
     futureResponse.map { response =>
       response match {
         case r if r.status.isSuccess =>

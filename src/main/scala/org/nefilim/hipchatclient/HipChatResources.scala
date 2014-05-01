@@ -1,6 +1,6 @@
 package org.nefilim.hipchatclient
 
-import org.json4s.{CustomSerializer, NoTypeHints}
+import org.json4s.{FieldSerializer, CustomSerializer, NoTypeHints}
 import spray.http.HttpEntity
 import spray.httpx.marshalling.Marshaller
 import org.json4s.jackson.Serialization._
@@ -24,6 +24,10 @@ object HipChatResources {
 
   case class NotificationRequest(message: String, color: MessageColour = Yellow, notification: Boolean = false, message_format: String = "html")
 
+  import FieldSerializer._
+  val notificationRequestSerializer = FieldSerializer[NotificationRequest](
+    renameTo("notification", "notify") // notify is declared by java.lang.Object
+  )
 
   class MessageColourSerializer extends CustomSerializer[MessageColour](format => (
     {
@@ -35,7 +39,7 @@ object HipChatResources {
     }
     ))
 
-  implicit val formats = Serialization.formats(NoTypeHints) + new MessageColourSerializer
+  implicit val formats = Serialization.formats(NoTypeHints) + new MessageColourSerializer + notificationRequestSerializer
 
   implicit val notificationRequestMarshaller = Marshaller.of[NotificationRequest](`application/json`) {
     (value, ct, ctx) => ctx.marshalTo(HttpEntity(ct, write(value)))
