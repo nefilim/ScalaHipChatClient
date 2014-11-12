@@ -1,10 +1,10 @@
 package org.nefilim.hipchatclient
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import spray.http._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import spray.client.pipelining._
-import akka.actor.ActorSystem
+import akka.actor.{ActorRefFactory, ActorContext, ActorSystem}
 import spray.http.Uri.Query
 import spray.http.HttpRequest
 import scala.Some
@@ -19,11 +19,9 @@ import spray.httpx.marshalling.Marshaller
 object HipChatClient {
   val serviceBasePath = "/v2"
 
-  implicit val system = ActorSystem("HipChatClientActorSystem")
-
   case class HipChatClientFailedResult(response: HttpResponse, exception: Option[Throwable] = None, message: Option[String] = None)
 
-  def apply(apiToken: String, host: String = "api.hipchat.com"): HipChatClient = new ConfiguredHipChatClient(apiToken, host)
+  def apply(context: ActorRefFactory, apiToken: String, host: String = "api.hipchat.com"): HipChatClient = new ConfiguredHipChatClient(apiToken, host, context)
 }
 
 import HipChatClient._
@@ -32,9 +30,9 @@ trait HipChatClient {
   def sendRoomNotification(room: String, message: String, notify: Boolean = true): Future[Either[HipChatClientFailedResult, MessageStatus]]
 }
 
-class ConfiguredHipChatClient(apiToken: String, host: String) extends HipChatClient with Logging {
+class ConfiguredHipChatClient(apiToken: String, host: String, implicit val context: ActorRefFactory) extends HipChatClient with LazyLogging {
 
-  import system.dispatcher
+  import context.dispatcher
 
   private val includedQueryParameters = Map[String, String](("format" -> "json"), ("auth_token" -> apiToken))
 

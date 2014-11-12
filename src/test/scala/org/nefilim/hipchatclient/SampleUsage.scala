@@ -1,6 +1,6 @@
 package org.nefilim.hipchatclient
 
-import com.typesafe.scalalogging.slf4j.Logging
+import com.typesafe.scalalogging.slf4j.LazyLogging
 import spray.testkit.ScalatestRouteTest
 import org.scalatest.{FunSpec, Matchers}
 import scala.util.{Failure, Success}
@@ -11,12 +11,12 @@ import scala.concurrent.duration._
 /**
  * Created by peter on 4/30/14.
  */
-class SampleUsageSpec extends FunSpec with Matchers with ScalatestRouteTest with Logging {
+class SampleUsageSpec extends FunSpec with Matchers with ScalatestRouteTest with LazyLogging {
   def actorRefFactory = system
 
   describe("sample usage") {
     it("should work") {
-      val hipChatClient = HipChatClient("sekretkeyhere")
+      val hipChatClient = HipChatClient(system, "sekretkeyhere")
 
       val f2 = hipChatClient.sendRoomNotification("DevOps", "this is a test")
       f2.onComplete {
