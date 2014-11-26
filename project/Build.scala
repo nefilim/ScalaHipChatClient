@@ -11,13 +11,13 @@ object MyBuild extends Build {
     shellPrompt := { s => Project.extract(s).currentProject.id + " > " }
   }
 
-  // TODO move these vals to V
-  val myScalaVersion = "2.10.4"
+  val myScalaVersion = "2.11.4"
 
   lazy val buildSettings = Defaults.defaultSettings ++ graphSettings ++ Seq( // must include Defaults.defaultSettings somewhere (early) in the chain
     organization := "org.nefilim",
     scalaVersion := myScalaVersion,
-    version := "0.3"
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
+    version := "0.4"
   )
 
   lazy val publishSettings = Seq(
